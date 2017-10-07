@@ -10,13 +10,13 @@ class Unit:
 		self.image = pygame.image.load(defaultImage)
 		self.location = [0, 0]
 		
-	def setPos(self, x, y):
-		self.location = [x, y]
+	def setPos(self, position):
+		self.location = position
 	
-	def move(self, dx, dy):
-		self.location[0] += dx
-		self.location[1] += dy
+	def move(self, movement):
+		self.location[0] += movement[0]
+		self.location[1] += movement[1]
 	
-	def drawOn(self, screen):
-		pos = [self.location[0] * self.tilesize, self.location[1] * self.tilesize]
-		screen.blit(self.image, pos)
+	def getImage(self):
+		return self.image
+	
