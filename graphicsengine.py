@@ -5,7 +5,7 @@ from unit import *
 from mapwindow import *
 from inputhandler import *
 
-class Engine:
+class GraphicsEngine:
 	
 	def __init__(self, screen, mapview):
 		pygame.init()
@@ -31,10 +31,11 @@ class Engine:
 		self.requestQuit = True
 
 # ---- End Engine class ---- #
+
 tilesize = 16
 screen = pygame.display.set_mode((800, 600))
 mapview = MapWindow((500, 500), tilesize)
-engine = Engine(screen, mapview)
+engine = GraphicsEngine(screen, mapview)
 
 me = Unit(tilesize, os.path.join('images', 'units', 'gtk3-demo.png'))
 engine.addUnit(me)
