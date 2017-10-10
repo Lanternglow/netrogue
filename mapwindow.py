@@ -23,8 +23,8 @@ class MapWindow:
 	def drawMap(self, map):
 		pass
 	
-	def drawUnit(self, unit):
-		x, y = unit.location
+	def drawUnit(self, unit, location):
+		x, y = location
 		unitDimensions = unit.getImage().get_rect()
 		spot = unitDimensions.move([ (x - self.origin[0]) * self.gridwidth, (y - self.origin[1]) * self.gridwidth ])
 		self.screen.blit(unit.getImage(), spot)
@@ -37,7 +37,7 @@ class MapWindow:
 	
 	def render(self, map, units, window, location):
 		self.prepareDraw(map)
-		for unit in units:
-			self.drawUnit(unit)
+		for unit, position in units.items():
+			self.drawUnit(unit, position)
 		self.drawDisplay(window, location)
 	

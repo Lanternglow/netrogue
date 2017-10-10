@@ -20,9 +20,10 @@ class InputHandler:
 		pygame.K_KP9: [1, -1]
 	}
 	
-	def __init__(self, engine, mapview):
+	def __init__(self, engine, mapview, units):
 		self.engine = engine
 		self.mapview = mapview
+		self.units = units
 	
 	def linkUnit(self, unit):
 		self.unit = unit
@@ -35,7 +36,7 @@ class InputHandler:
 				inkey = event.key
 				if inkey in self.movements:
 					movement = self.movements[inkey]
-					self.unit.move(movement)
+					self.units.moveUnit(self.unit, movement)
 				if inkey in self.panning:
 					pan = self.panning[inkey]
 					self.mapview.pan(pan)

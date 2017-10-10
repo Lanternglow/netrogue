@@ -2,12 +2,13 @@ import sys
 import os
 import pygame
 from unit import *
+from unitcollection import *
 from mapwindow import *
 from inputhandler import *
 
 class GraphicsEngine:
 	
-	def __init__(self, screen, mapview):
+	def __init__(self, screen, mapview, units):
 		pygame.init()
 		self.requestQuit = False
 		
@@ -16,16 +17,12 @@ class GraphicsEngine:
 		self.screen = screen
 		self.mapview = mapview
 		self.maplocation = self.mapview.get_rect().move([20, 20])
-		self.units = set()
-		self.inputHandler = InputHandler(self, self.mapview)
+		self.units = units
 	
 	def runFrame(self):
 		self.screen.fill(self.background)
-		self.mapview.render(None, self.units, self.screen, self.maplocation)
+		self.mapview.render(None, self.units.unitsPosition, self.screen, self.maplocation)
 		pygame.display.flip()
-	
-	def addUnit(self, unit):
-		self.units.add(unit)
 	
 	def quit(self):
 		self.requestQuit = True
@@ -35,11 +32,12 @@ class GraphicsEngine:
 tilesize = 16
 screen = pygame.display.set_mode((800, 600))
 mapview = MapWindow((500, 500), tilesize)
-engine = GraphicsEngine(screen, mapview)
+units = UnitCollection()
+engine = GraphicsEngine(screen, mapview, units)
 
 me = Unit(tilesize, os.path.join('images', 'units', 'gtk3-demo.png'))
-engine.addUnit(me)
-inputHandler = InputHandler(engine, mapview)
+units.addUnit(me, (1, 1))
+inputHandler = InputHandler(engine, mapview, units)
 inputHandler.linkUnit(me)
 
 while engine.requestQuit != True:
