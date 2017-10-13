@@ -29,16 +29,19 @@ class GraphicsEngine:
 
 # ---- End Engine class ---- #
 
-tilesize = 16
+tilesize = 60
 screen = pygame.display.set_mode((800, 600))
 mapview = MapWindow((500, 500), tilesize)
 units = UnitCollection()
 engine = GraphicsEngine(screen, mapview, units)
 
-me = Unit(tilesize, os.path.join('images', 'units', 'gtk3-demo.png'))
+me = Unit(tilesize, os.path.join('images', 'units', 'fighter.png'))
 units.addUnit(me, (1, 1))
 inputHandler = InputHandler(engine, mapview, units)
 inputHandler.linkUnit(me)
+
+enemy = Unit(tilesize, os.path.join('images', 'units', 'skeleton.png'))
+units.addUnit(enemy, (4, 3))
 
 while engine.requestQuit != True:
 	engine.runFrame()
