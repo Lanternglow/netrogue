@@ -2,6 +2,8 @@ import sys
 import os
 from unit import *
 import socket
+import threading
+import time
 
 class Server:
 	
@@ -11,15 +13,16 @@ class Server:
 		self.port = port
 		self.netsocket.bind((self.hostname, self.port))
 		self.players = {}
+		self.listening = {}
 	
 	def __enter__(self):
 		return self
 	
 	def __exit__(self, exc_type, exc_value, traceback):
 		for connection in self.players.values():
-			connection.shutdown(socket.SHUT_RDWR)
+			#connection.shutdown(socket.SHUT_RDWR)
 			connection.close()
-		self.netsocket.shutdown(socket.SHUT_RDWR)
+		#self.netsocket.shutdown(socket.SHUT_RDWR)
 		self.netsocket.close()
 	
 	def acceptPlayer(self, slotNum):
@@ -43,12 +46,34 @@ class Server:
 			dataToSend = databytes[bytesSent:]
 			bytesSent += connection.send(dataToSend)
 	
+	def printSocket(self, slot):
+		self.listening[slot] = True
+		connection = self.players[slot]
+		while self.listening[slot]:
+			data = connection.recv(32)
+			if len(data) > 0:
+				datastring = data.decode('utf-8')
+				print("read: {}".format(datastring))
+			time.sleep(0.1)
+	
+	def listenOn(self, slot):
+		self.listenThread = threading.Thread(target = self.printSocket, args = (slot,))
+		self.listenThread.start()
+	
+	def endListen(self, slot):
+		self.listening[slot] = False
+	
 # end class definition
 
 if __name__ == "__main__":
 	with Server(22345) as server:
 		server.acceptPlayer(1)
-		server.sendPlayerSlot(1)
-		message = input("message: ")
-		server.sendPlayerData(1, message)
+		server.listenOn(1)
+		
+		unread = True
+		while unread or text != 'q':
+			unread = False
+			text = input()
+			server.sendPlayerData(1, text)
+	print('closing down')
 	
