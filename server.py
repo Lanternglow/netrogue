@@ -63,18 +63,19 @@ if __name__ == "__main__":
 	if len(sys.argv) < 2:
 		print('Need number of clients')
 		sys.exit(1)
-	maxClients = sys.argv[1]
+	maxClients = int(sys.argv[1])
 	
 	with Server(22345) as server:
 		for slot in range(1, maxClients + 1):
 			server.acceptPlayer(slot)
 			server.listenOn(slot)
-			server.sendPlayerData("You are client {}".format(slot))
+			server.sendPlayerData(slot, "You are client {}".format(slot))
 		
-		unread = True
-		while unread or text != 'q':
+		while True:
 			unread = False
 			text = input()
+			if text == 'q': break
+			
 			for slot in server.players.keys():
 				server.sendPlayerData(slot, text)
 	print('closing down')
