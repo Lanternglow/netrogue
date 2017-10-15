@@ -19,9 +19,9 @@ class Server:
 	
 	def __exit__(self, exc_type, exc_value, traceback):
 		for connection in self.players.values():
-			#connection.shutdown(socket.SHUT_RDWR)
+			connection.shutdown(socket.SHUT_RDWR)
 			connection.close()
-		#self.netsocket.shutdown(socket.SHUT_RDWR)
+		self.netsocket.shutdown(socket.SHUT_RDWR)
 		self.netsocket.close()
 	
 	def acceptPlayer(self, slotNum):
