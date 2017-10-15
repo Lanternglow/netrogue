@@ -49,8 +49,14 @@ class Client:
 # end class definition
 
 if __name__ == "__main__":
+	print(sys.argv)
+	if len(sys.argv) < 2:
+		print('Need to give a computer to connect to')
+		sys.exit(1)
+	host = sys.argv[1]
+	
 	with Client(22345) as client:
-		client.connect('localhost')
+		client.connect(host)
 		client.listen()
 		
 		unread = True
