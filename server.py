@@ -9,9 +9,8 @@ class Server:
 	
 	def __init__(self, port):
 		self.netsocket = socket.socket()
-		self.hostname = socket.gethostname()
 		self.port = port
-		self.netsocket.bind((self.hostname, self.port))
+		self.netsocket.bind(('', self.port))
 		self.players = {}
 		self.listening = {}
 	
