@@ -30,14 +30,9 @@ class Server:
 		if slotNum in self.players: raise Exception('player slot already taken')
 		self.players[slotNum] = connection
 		
-	def sendPlayerSlot(self, slotNum):
-		connection = self.players[slotNum]
-		slotNumStr = "slot: {}".format(slotNum)
-		self.sendPlayerData(slotNum, slotNumStr)
-	
 	def sendPlayerData(self, slot, data):
+		print("sending to player {}: {}".format(slot, data))
 		databytes = bytes(data, 'utf-8')
-		print("sending to player {}: {}".format(slot, databytes))
 		connection = self.players[slot]
 		bytesSent = 0
 		datalen = len(databytes)
@@ -52,7 +47,7 @@ class Server:
 			data = connection.recv(32)
 			if len(data) > 0:
 				datastring = data.decode('utf-8')
-				print("read: {}".format(datastring))
+				print("read from {}: {}".format(slot, datastring))
 			time.sleep(0.1)
 	
 	def listenOn(self, slot):
@@ -65,14 +60,22 @@ class Server:
 # end class definition
 
 if __name__ == "__main__":
+	if len(sys.argv) < 2:
+		print('Need number of clients')
+		sys.exit(1)
+	maxClients = sys.argv[1]
+	
 	with Server(22345) as server:
-		server.acceptPlayer(1)
-		server.listenOn(1)
+		for slot in range(1, maxClients + 1):
+			server.acceptPlayer(slot)
+			server.listenOn(slot)
+			server.sendPlayerData("You are client {}".format(slot))
 		
 		unread = True
 		while unread or text != 'q':
 			unread = False
 			text = input()
-			server.sendPlayerData(1, text)
+			for slot in server.players.keys():
+				server.sendPlayerData(slot, text)
 	print('closing down')
 	
