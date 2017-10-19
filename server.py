@@ -1,9 +1,10 @@
 import sys
 import os
-from unit import *
 import socket
 import threading
 import time
+
+from exceptions import ListenerException
 
 class Server:
 	
@@ -13,25 +14,29 @@ class Server:
 		self.netsocket.bind(('', self.port))
 		self.players = {}
 		self.listening = {}
+		self.listenThreads = {}
 	
 	def __enter__(self):
 		return self
 	
 	def __exit__(self, exc_type, exc_value, traceback):
-		for connection in self.players.values():
-			connection.shutdown(socket.SHUT_RDWR)
+		for slot, connection in self.players.items():
+			self.endListen(slot)
+			self.listenThreads[slot].join()
+			#connection.shutdown(socket.SHUT_RDWR)
 			connection.close()
-		self.netsocket.shutdown(socket.SHUT_RDWR)
+		#self.netsocket.shutdown(socket.SHUT_RDWR)
 		self.netsocket.close()
 	
 	def acceptPlayer(self, slotNum):
+		if slotNum in self.players: raise Exception('player slot already taken')
 		self.netsocket.listen(1)
 		connection, address = self.netsocket.accept()
-		if slotNum in self.players: raise Exception('player slot already taken')
+		connection.setblocking(False)
 		self.players[slotNum] = connection
-		
+	
 	def sendPlayerData(self, slot, data):
-		print("sending to player {}: {}".format(slot, data))
+		#print("sending to player {}: {}".format(slot, data))
 		databytes = bytes(data, 'utf-8')
 		connection = self.players[slot]
 		bytesSent = 0
@@ -40,19 +45,27 @@ class Server:
 			dataToSend = databytes[bytesSent:]
 			bytesSent += connection.send(dataToSend)
 	
-	def printSocket(self, slot):
+	def registerListener(self, callback):
+		self.notify = callback
+		self.listenerRegistered = True
+	
+	def notifyListener(self, slot):
+		if not self.listenerRegistered: raise ListenerException('No listener registered')
 		self.listening[slot] = True
 		connection = self.players[slot]
 		while self.listening[slot]:
-			data = connection.recv(32)
-			if len(data) > 0:
-				datastring = data.decode('utf-8')
-				print("read from {}: {}".format(slot, datastring))
+			try:
+				data = connection.recv(32)
+				if len(data) > 0:
+					datastring = data.decode('utf-8')
+					self.notify(datastring)
+			except BlockingIOError:
+				pass
 			time.sleep(0.1)
 	
 	def listenOn(self, slot):
-		self.listenThread = threading.Thread(target = self.printSocket, args = (slot,))
-		self.listenThread.start()
+		self.listenThreads[slot] = threading.Thread(target = self.notifyListener, args = (slot,))
+		self.listenThreads[slot].start()
 	
 	def endListen(self, slot):
 		self.listening[slot] = False
@@ -65,14 +78,17 @@ if __name__ == "__main__":
 		sys.exit(1)
 	maxClients = int(sys.argv[1])
 	
+	def printMessage(message):
+		print(message)
+	
 	with Server(22345) as server:
 		for slot in range(1, maxClients + 1):
+			server.registerListener(printMessage)
 			server.acceptPlayer(slot)
 			server.listenOn(slot)
 			server.sendPlayerData(slot, "You are client {}".format(slot))
 		
 		while True:
-			unread = False
 			text = input()
 			if text == 'q': break
 			
