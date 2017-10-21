@@ -2,7 +2,7 @@ import sys
 import os
 import pygame
 
-from unit import *
+from units.unit import Unit
 
 class MapWindow:
 	

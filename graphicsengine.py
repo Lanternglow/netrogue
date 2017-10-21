@@ -1,8 +1,8 @@
 import sys
 import os
 import pygame
-from unit import *
-from unitcollection import *
+from units.unit import Unit
+from units.unitcollection import UnitCollection
 from mapwindow import *
 from inputhandler import *
 
