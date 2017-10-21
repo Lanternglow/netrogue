@@ -1,0 +1,3 @@
+class UnitException(Exception):
+	pass
+

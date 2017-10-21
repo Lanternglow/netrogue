@@ -1,6 +1,6 @@
 import sys
 import os
-from exceptions import *
+from unitExceptions import UnitException
 
 class UnitCollection:
 	
@@ -40,11 +40,11 @@ class UnitCollection:
 # --- End class definition ---
 
 if __name__ == "__main__":
-	from .unit import Unit
+	from unit import Unit
 	
-	unit1 = Unit(60, os.path.join('images', 'units', 'fighter.png'))
-	unit2 = Unit(60, os.path.join('images', 'units', 'gtk3-demo.png'))
-	unit3 = Unit(60, os.path.join('images', 'units', 'fighter.png'))
+	unit1 = Unit(60, os.path.join('..', 'images', 'units', 'fighter.png'))
+	unit2 = Unit(60, os.path.join('..', 'images', 'units', 'gtk3-demo.png'))
+	unit3 = Unit(60, os.path.join('..', 'images', 'units', 'fighter.png'))
 	
 	units = UnitCollection()
 	units.addUnit(unit1, (0, 3))
