@@ -4,7 +4,7 @@ import socket
 import threading
 import time
 
-from exceptions import ListenerException
+from .exceptions import ListenerException
 
 class Client:
 	
@@ -63,25 +63,3 @@ class Client:
 		self.listening = False
 	
 # end class definition
-
-if __name__ == "__main__":
-	if len(sys.argv) < 2:
-		print('Need to give a computer to connect to')
-		sys.exit(1)
-	host = sys.argv[1]
-	
-	def printServerData(message):
-		print(message)
-	
-	with Client(22345) as client:
-		client.registerListener(printServerData)
-		client.connect(host)
-		client.startListen()
-		
-		while True:
-			text = input()
-			if text == 'q': break
-			
-			client.sendData(text)
-	print('closing down')
-	
