@@ -8,6 +8,13 @@ class UnitCollection:
 	def __init__(self):
 		self.unitsPosition = dict() # unit => position
 		self.positionsUnit = dict() # position => unit
+		self.updateTypes = {
+			'move': self.moveUnit
+		}
+	
+	def applyUpdate(self, update):
+		for updateCommandName, arguments in update.updates:
+			self.updateTypes[updateCommandName](*arguments)
 		
 	def addUnit(self, unit, position):
 		if position in self.positionsUnit:
@@ -21,6 +28,9 @@ class UnitCollection:
 		position = self.unitsPosition[unit]
 		return (position[0] + movement[0], position[1] + movement[1])
 	
+	def positionOccupied(self, position):
+		return position in self.positionsUnit
+
 	def moveUnit(self, unit, movement):
 		position = self.unitsPosition[unit]
 		newPosition = self.positionAfterMovement(unit, movement)
